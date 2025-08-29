@@ -1,0 +1,27 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = await getCollection('blog', ({ data }) => !data.draft);
+const sorted = posts.sort((a, b) => +b.data.date - +a.data.date);
+---
+
+<Layout title="Blog">
+  <section class="space-y-8">
+    <h1 class="text-3xl font-bold">Blog</h1>
+    <ul class="space-y-6">
+      {sorted.map(({ slug, data }) => (
+        <li class="bg-white rounded-xl shadow p-6 hover:shadow-md transition">
+          <a href={`/blog/${slug}`} class="block">
+            <h2 class="text-xl font-semibold">{data.title}</h2>
+            <p class="text-gray-600 mt-1">{data.description}</p>
+            <p class="text-sm text-gray-400 mt-2">
+              {new Date(data.date).toLocaleDateString()}
+              {data.tags.length ? ` · ${data.tags.join(', ')}` : ''}
+            </p>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</Layout>
