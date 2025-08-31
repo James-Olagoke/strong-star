@@ -1,0 +1,201 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+/**
+ * Tip: Put optional preview images at:
+ *   /public/projects/landing.jpg
+ *   /public/projects/blog.jpg
+ *   /public/projects/portfolio-grid.jpg
+ *   /public/projects/ui-kit.jpg
+ * If you don’t have images yet, leave image: undefined — the layout still looks great.
+ */
+const projects = [
+  {
+    title: 'Marketing Landing (Astro + Tailwind)',
+    description:
+      'A fast, animated landing page with a gradient hero, feature cards, and a conversion-focused CTA.',
+    tags: ['astro', 'tailwind', 'animation'],
+    year: 2025,
+    image: '/projects/landing.png',   // remove or set undefined if no image yet
+    live: '/',
+    code: 'https://github.com/James-Olagoke/strong-star',
+  },
+  {
+    title: 'Content Blog (Astro Collections)',
+    description:
+      'Markdown-driven blog with Content Collections, dynamic routes, and typography polish.',
+    tags: ['astro', 'content', 'blog'],
+    year: 2025,
+    image: '/projects/blog.png',
+    live: '/blog',
+    code: 'https://github.com/James-Olagoke/strong-star',
+  },
+  {
+    title: 'Portfolio Grid',
+    description:
+      'Responsive project cards with badges, dark surfaces, and consistent spacing.',
+    tags: ['ui', 'grid', 'responsive'],
+    year: 2025,
+    image: '/projects/portfolio-grid.png',
+    live: '/projects',
+    code: 'https://github.com/James-Olagoke/strong-star',
+  },
+  {
+    title: 'UI Kit (Utilities)',
+    description:
+      'Reusable buttons, cards, sections, and helpers for rapid page building.',
+    tags: ['tailwind', 'components', 'utilities'],
+    year: 2025,
+    image: '/projects/ui-kit.png',
+    live: '/projects',
+    code: 'https://github.com/James-Olagoke/strong-star',
+  },
+];
+
+// Create a unique, sorted tag list for the filter chips
+const allTags = Array.from(
+  new Set(projects.flatMap(p => p.tags))
+).sort((a, b) => a.localeCompare(b));
+---
+
+<Layout title="Projects">
+  <!-- Header -->
+  <header class="mb-10 md:mb-14" data-animate>
+    <h1 class="text-3xl md:text-4xl font-extrabold text-white">Projects</h1>
+    <p class="mt-3 text-zinc-400 max-w-3xl">
+      A selection of builds and practice work focused on performance, accessibility, and clean UI.
+      Use the search and tags to explore.
+    </p>
+  </header>
+
+  <!-- Filters -->
+  <section class="rounded-2xl border border-white/10 bg-zinc-900/60 p-4 md:p-6" data-animate>
+    <div class="flex flex-col md:flex-row md:items-center gap-4">
+      <!-- Search -->
+      <div class="flex-1">
+        <label for="project-search" class="sr-only">Search projects</label>
+        <input
+          id="project-search"
+          type="text"
+          placeholder="Search by title or description…"
+          class="w-full rounded-md border border-white/10 bg-zinc-950/70 px-4 py-2.5 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        />
+      </div>
+
+      <!-- Tag chips -->
+      <div class="flex flex-wrap gap-2">
+        <button data-tag="all"
+          class="chip active rounded-full border border-white/10 bg-zinc-800/70 px-3 py-1.5 text-sm text-zinc-100 hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          All
+        </button>
+
+        {allTags.map(tag => (
+          <button data-tag={tag}
+            class="chip rounded-full border border-white/10 bg-zinc-800/50 px-3 py-1.5 text-sm text-zinc-200 hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 capitalize">
+            {tag}
+          </button>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Grid -->
+  <section class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {projects.map((p) => (
+      <article
+        class="card card-surface group overflow-hidden border border-white/10 hover:border-indigo-500/40"
+        data-animate
+        data-title={p.title.toLowerCase()}
+        data-desc={p.description.toLowerCase()}
+        data-tags={p.tags.join(',')}
+      >
+        {p.image && (
+          <div class="relative -mx-6 -mt-6 mb-4 aspect-[16/9] overflow-hidden">
+            <img
+              src={p.image}
+              alt={p.title}
+              class="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03] group-hover:brightness-[1.05]"
+              loading="lazy"
+            />
+            <div class="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/10"></div>
+          </div>
+        )}
+
+        <div class="flex items-start justify-between gap-3">
+          <h3 class="text-lg font-semibold text-white leading-snug">{p.title}</h3>
+          <span class="rounded-full bg-indigo-500/20 px-2.5 py-1 text-xs text-indigo-300 border border-indigo-400/20">
+            {p.year}
+          </span>
+        </div>
+
+        <p class="mt-2 text-zinc-400">{p.description}</p>
+
+        <!-- Badges -->
+        <div class="mt-3 flex flex-wrap gap-2">
+          {p.tags.map(tag => (
+            <span class="rounded-full border border-white/10 bg-zinc-800/60 px-2.5 py-1 text-xs text-zinc-200 capitalize">
+              {tag}
+            </span>
+          ))}
+        </div>
+
+        <!-- Actions -->
+        <div class="mt-5 flex items-center gap-3">
+          <a href={p.live} class="btn-primary">View</a>
+          <a href={p.code} class="btn-secondary">Code</a>
+        </div>
+      </article>
+    ))}
+  </section>
+
+  <!-- No results (hidden by default, shown by script) -->
+  <p id="no-results" class="mt-12 text-center text-zinc-500 hidden">
+    No projects match your filters.
+  </p>
+
+  <!-- Filtering script (client-side, tiny & fast) -->
+  <script is:inline>
+    const input = document.querySelector('#project-search');
+    const chips = Array.from(document.querySelectorAll('.chip'));
+    const cards = Array.from(document.querySelectorAll('article[data-title]'));
+    const empty = document.querySelector('#no-results');
+
+    let activeTag = 'all';
+
+    function applyFilters() {
+      const q = (input?.value || '').trim().toLowerCase();
+
+      let visibleCount = 0;
+      for (const el of cards) {
+        const title = el.dataset.title || '';
+        const desc  = el.dataset.desc || '';
+        const tags  = (el.dataset.tags || '').split(',');
+
+        const matchText = !q || title.includes(q) || desc.includes(q);
+        const matchTag  = activeTag === 'all' || tags.includes(activeTag);
+
+        const show = matchText && matchTag;
+        el.classList.toggle('hidden', !show);
+        if (show) visibleCount++;
+      }
+
+      empty?.classList.toggle('hidden', visibleCount !== 0);
+    }
+
+    input?.addEventListener('input', applyFilters);
+
+    chips.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // visual active state
+        chips.forEach(c => c.classList.remove('active', 'bg-zinc-800/70'));
+        btn.classList.add('active', 'bg-zinc-800/70');
+
+        activeTag = btn.dataset.tag || 'all';
+        applyFilters();
+      });
+    });
+
+    // initial filter
+    applyFilters();
+  </script>
+</Layout>
