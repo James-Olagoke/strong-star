@@ -1,29 +1,52 @@
 ---
 import '../styles/global.css';
-const { title = "Site" } = Astro.props;
+const { title = 'Site' } = Astro.props;
 ---
 
-<html lang="en" class="bg-gray-100">
+<html lang="en" class="bg-zinc-950">
   <head>
     <meta charset="utf-8" />
     <title>{title}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
-  <body class="font-sans text-gray-900">
-    <!-- Top Nav -->
-    <header class="bg-gray-900 text-white">
-      <nav class="max-w-5xl mx-auto px-4 py-4 flex items-center gap-6">
-  <a href="/" class="hover:text-yellow-400">Home</a>
-  <a href="/about" class="hover:text-yellow-400">About</a>
-  <a href="/contact" class="hover:text-yellow-400">Contact</a>
-  <a href="/blog" class="hover:text-yellow-400">Blog</a>
-</nav>
+  <body class="text-zinc-100 selection:bg-indigo-400/20">
+    <!-- Subtle radial flair behind everything -->
+    <div class="fixed inset-0 -z-10 bg-grid-radial opacity-40"></div>
 
+    <!-- Sticky dark navbar (glassy) -->
+    <header class="sticky top-0 z-50 border-b border-white/10 bg-zinc-950/70 backdrop-blur">
+      <nav class="container-grid py-3 flex items-center gap-6">
+        <a href="/" class="font-bold text-lg">James<span class="text-indigo-400">.astro</span></a>
+        <div class="ml-auto flex items-center gap-5 text-sm">
+          <a href="/" class="hover:text-indigo-300">Home</a>
+          <a href="/about" class="hover:text-indigo-300">About</a>
+          <a href="/projects" class="hover:text-indigo-300">Projects</a>
+          <a href="/blog" class="hover:text-indigo-300">Blog</a>
+          <a href="/contact" class="hover:text-indigo-300">Contact</a>
+        </div>
+      </nav>
     </header>
 
     <!-- Page content -->
-    <main class="max-w-5xl mx-auto px-4 py-10">
+    <main class="container-grid py-10 md:py-14">
       <slot />
     </main>
+
+    <!-- Minimal scroll-reveal -->
+    <script is:inline>
+      const els = document.querySelectorAll('[data-animate]');
+      const obs = new IntersectionObserver((entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            e.target.classList.add('animate-fade-up');
+            obs.unobserve(e.target);
+          }
+        }
+      }, { threshold: 0.15 });
+      els.forEach(el => {
+        el.classList.add('opacity-0', 'translate-y-3', 'will-change-transform');
+        obs.observe(el);
+      });
+    </script>
   </body>
 </html>
