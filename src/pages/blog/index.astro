@@ -1,0 +1,76 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a,b) => +b.data.date - +a.data.date);
+const featured = posts[0];
+const rest = posts.slice(1);
+const allTags = Array.from(new Set(posts.flatMap(p => p.data.tags || []))).sort((a,b)=>a.localeCompare(b));
+---
+<Layout title="Blog">
+  {featured && (
+    <section class="relative overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/60" data-animate>
+      {featured.data.coverImage ? (
+        <div class="relative aspect-[16/7]">
+          <img src={featured.data.coverImage} alt={featured.data.title} class="h-full w-full object-cover" loading="lazy" />
+          <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/80 via-zinc-950/30 to-transparent"></div>
+        </div>
+      ) : <div class="relative aspect-[16/7] bg-gradient-to-br from-indigo-700 via-indigo-600 to-fuchsia-700"></div>}
+      <div class="p-6 md:p-8">
+        <p class="text-xs uppercase tracking-widest text-zinc-400">Featured</p>
+        <h1 class="mt-2 text-2xl md:text-3xl font-extrabold text-white">
+          <a href={`/blog/${featured.slug}`} class="hover:underline">{featured.data.title}</a>
+        </h1>
+        <p class="mt-2 text-zinc-400 max-w-3xl">{featured.data.description}</p>
+      </div>
+    </section>
+  )}
+
+  <section class="mt-8 rounded-2xl border border-white/10 bg-zinc-900/60 p-4 md:p-6" data-animate>
+    <div class="flex flex-wrap gap-2 items-center">
+      <input id="blog-search" type="text" placeholder="Search…"
+        class="flex-1 rounded-md border border-white/10 bg-zinc-950/70 px-4 py-2.5 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+      <button data-tag="all" class="chip active rounded-full border border-white/10 bg-zinc-800/70 px-3 py-1.5 text-sm">All</button>
+      {allTags.map(t => <button data-tag={t} class="chip rounded-full border border-white/10 bg-zinc-800/50 px-3 py-1.5 text-sm capitalize">{t}</button>)}
+    </div>
+  </section>
+
+  <section class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {rest.map(({ slug, data }) => (
+      <article class="card card-surface border border-white/10 hover:border-indigo-500/40 overflow-hidden group"
+        data-animate data-title={data.title.toLowerCase()} data-desc={data.description.toLowerCase()} data-tags={(data.tags||[]).join(',')}>
+        {data.coverImage && (
+          <div class="relative -mx-6 -mt-6 mb-4 aspect-[16/9] overflow-hidden">
+            <img src={data.coverImage} alt={data.title} class="h-full w-full object-cover" loading="lazy" />
+            <div class="absolute inset-0 ring-1 ring-inset ring-white/10"></div>
+          </div>
+        )}
+        <h2 class="text-lg font-semibold text-white"><a href={`/blog/${slug}`} class="hover:underline">{data.title}</a></h2>
+        <p class="mt-2 text-zinc-400">{data.description}</p>
+      </article>
+    ))}
+  </section>
+
+  <p id="no-results" class="mt-12 text-center text-zinc-500 hidden">No posts match your filters.</p>
+
+  <script is:inline>
+    const input = document.querySelector('#blog-search');
+    const chips = [...document.querySelectorAll('.chip')];
+    const cards = [...document.querySelectorAll('article[data-title]')];
+    const empty = document.querySelector('#no-results');
+    let activeTag = 'all';
+    function apply() {
+      const q = (input?.value || '').toLowerCase().trim();
+      let visible = 0;
+      for (const el of cards) {
+        const okTxt = !q || el.dataset.title.includes(q) || el.dataset.desc.includes(q);
+        const okTag = activeTag === 'all' || (el.dataset.tags || '').split(',').includes(activeTag);
+        const show = okTxt && okTag; el.classList.toggle('hidden', !show); if (show) visible++;
+      }
+      empty?.classList.toggle('hidden', visible !== 0);
+    }
+    input?.addEventListener('input', apply);
+    chips.forEach(b => b.addEventListener('click', () => { chips.forEach(c=>c.classList.remove('active','bg-zinc-800/70')); b.classList.add('active','bg-zinc-800/70'); activeTag=b.dataset.tag||'all'; apply(); }));
+    apply();
+  </script>
+</Layout>
