@@ -1,13 +1,26 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import { projects } from '../../data/projects';
 
-// REQUIRED: tell Astro which /projects/[slug] pages to build
+// ✅ Load the data INSIDE getStaticPaths with a dynamic import.
+// This avoids any Vite/TS resolution hiccups during SSR builds.
 export async function getStaticPaths() {
-  return projects.map((p) => ({
-    params: { slug: p.slug },
-    props: { project: p },
-  }));
+  try {
+    const mod = await import('../../data/projects'); // no .ts extension
+    const projects = mod.projects ?? [];
+
+    if (!Array.isArray(projects) || projects.length === 0) {
+      console.error('[projects/[slug]] No projects found from data file.');
+      return [];
+    }
+
+    return projects.map((p) => ({
+      params: { slug: p.slug },
+      props: { project: p },
+    }));
+  } catch (err) {
+    console.error('[projects/[slug]] getStaticPaths import error:', err);
+    throw err; // surface the real error in logs
+  }
 }
 
 const { project } = Astro.props as {
@@ -64,7 +77,6 @@ const { title, description, year, tags, image, live, code, content } = project;
 
   <!-- Body -->
   <section class="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <!-- Overview + Features -->
     <article class="lg:col-span-2 space-y-6">
       <div class="card card-surface" data-animate>
         <h2 class="text-xl font-semibold text-white">Overview</h2>
@@ -90,7 +102,6 @@ const { title, description, year, tags, image, live, code, content } = project;
       )}
     </article>
 
-    <!-- Tech Aside -->
     <aside class="space-y-6">
       <div class="card card-surface" data-animate>
         <h3 class="text-lg font-semibold text-white">Tech</h3>

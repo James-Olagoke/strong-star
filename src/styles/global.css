@@ -1,6 +1,42 @@
+/* Tailwind v4 core */
 @import "tailwindcss";
-@import "tailwindcss/utilities";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Dark article typography */
+@plugin "@tailwindcss/typography";
+
+/* Tokens + animations */
+@theme {
+  @keyframes fade-up { 0% { opacity: 0; transform: translateY(12px); } 100% { opacity: 1; transform: translateY(0); } }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+  --animate-fade-up: fade-up .6s ease-out forwards;
+  --animate-float:    float 4s ease-in-out infinite;
+
+  --bg-grid-radial:
+    radial-gradient(ellipse at top, rgba(79,70,229,.18), transparent 60%),
+    radial-gradient(ellipse at bottom, rgba(236,72,153,.18), transparent 60%);
+}
+
+/* Reusable components */
+@layer components {
+  .container-grid { @apply max-w-6xl mx-auto px-4; }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center font-semibold rounded-md
+           px-5 py-3 bg-indigo-600 text-white hover:bg-indigo-500
+           focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-0 transition;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center font-semibold rounded-md
+           px-5 py-3 border border-white/20 text-white hover:bg-white/10
+           focus:outline-none focus:ring-2 focus:ring-white/30 focus:ring-offset-0 transition;
+  }
+
+  .card { @apply rounded-xl p-6 shadow-sm transition; }
+  .card-surface { @apply bg-zinc-900/60 border border-white/10; }
+}
+
+/* Utility aliases */
+.animate-fade-up { animation: var(--animate-fade-up); }
+.animate-float   { animation: var(--animate-float); }
+.bg-grid-radial  { background-image: var(--bg-grid-radial); }
