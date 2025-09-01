@@ -1,12 +1,39 @@
 ---
 import Layout from '../layouts/Layout.astro';
 ---
+
 <Layout title="Contact">
-  <h1 class="text-3xl font-bold text-white mb-4" data-animate>Contact</h1>
-  <form class="space-y-4 max-w-lg" data-animate>
-    <input type="text" placeholder="Your name" class="w-full border border-white/10 bg-zinc-950/70 rounded px-4 py-2 text-zinc-100" />
-    <input type="email" placeholder="Email" class="w-full border border-white/10 bg-zinc-950/70 rounded px-4 py-2 text-zinc-100" />
-    <textarea placeholder="Message" class="w-full border border-white/10 bg-zinc-950/70 rounded px-4 py-2 h-32 text-zinc-100"></textarea>
-    <button class="btn-primary">Send</button>
-  </form>
+  <section class="grid md:grid-cols-2 gap-8 items-start">
+    <div class="space-y-4" data-animate>
+      <h1 class="text-3xl font-bold text-white">Let’s talk</h1>
+      <p class="text-zinc-400">Tell me a little about your project and timeline. I’ll reply with next steps.</p>
+
+      <form id="contact-form" class="space-y-4 max-w-lg">
+        <input name="name" type="text" placeholder="Your name"
+               class="w-full border border-white/10 bg-zinc-950/70 rounded px-4 py-2 text-zinc-100" required />
+        <input name="email" type="email" placeholder="Email"
+               class="w-full border border-white/10 bg-zinc-950/70 rounded px-4 py-2 text-zinc-100" required />
+        <textarea name="message" placeholder="Message"
+                  class="w-full border border-white/10 bg-zinc-950/70 rounded px-4 py-2 h-32 text-zinc-100" required></textarea>
+        <button class="btn-primary w-full md:w-auto">Send</button>
+        <p id="form-msg" class="text-sm text-zinc-500"></p>
+      </form>
+    </div>
+
+    <div class="rounded-2xl overflow-hidden border border-white/10" data-animate>
+      <img src="/images/map.jpg" alt="" class="h-full w-full object-cover" loading="lazy" />
+    </div>
+  </section>
+
+  <script is:inline>
+    const form = document.getElementById('contact-form');
+    const msg  = document.getElementById('form-msg');
+    form?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(form).entries());
+      if (!data.name || !data.email || !data.message) { msg.textContent = 'Please fill all fields.'; return; }
+      msg.textContent = 'Thanks! This demo form is client-side only. Connect a backend (Formspree, serverless) to send.';
+      form.reset();
+    });
+  </script>
 </Layout>

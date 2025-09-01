@@ -1,16 +1,17 @@
 /* Tailwind v4 core */
 @import "tailwindcss";
-
-/* Dark article typography */
+/* Prose for dark articles */
 @plugin "@tailwindcss/typography";
 
-/* Tokens + animations */
+/* Theme tokens & keyframes */
 @theme {
-  @keyframes fade-up { 0% { opacity: 0; transform: translateY(12px); } 100% { opacity: 1; transform: translateY(0); } }
-  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+  @keyframes fade-up { 0% { opacity: 0; transform: translateY(12px) scale(.98); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+  @keyframes float   { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-6px) } }
+  @keyframes shimmer { 0% { background-position: -200% 0 } 100% { background-position: 200% 0 } }
+  @keyframes tilt    { 0% { transform: rotateX(0deg) rotateY(0deg) } 50% { transform: rotateX(2deg) rotateY(-2deg) } 100% { transform: rotateX(0deg) rotateY(0deg) } }
 
-  --animate-fade-up: fade-up .6s ease-out forwards;
-  --animate-float:    float 4s ease-in-out infinite;
+  --animate-fade-up: fade-up .6s cubic-bezier(.22,1,.36,1) forwards;
+  --animate-float:   float 4s ease-in-out infinite;
 
   --bg-grid-radial:
     radial-gradient(ellipse at top, rgba(79,70,229,.18), transparent 60%),
@@ -24,16 +25,21 @@
   .btn-primary {
     @apply inline-flex items-center justify-center font-semibold rounded-md
            px-5 py-3 bg-indigo-600 text-white hover:bg-indigo-500
-           focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-0 transition;
+           focus:outline-none focus:ring-2 focus:ring-indigo-400 transition;
   }
   .btn-secondary {
     @apply inline-flex items-center justify-center font-semibold rounded-md
            px-5 py-3 border border-white/20 text-white hover:bg-white/10
-           focus:outline-none focus:ring-2 focus:ring-white/30 focus:ring-offset-0 transition;
+           focus:outline-none focus:ring-2 focus:ring-white/30 transition;
   }
+  .badge { @apply inline-flex items-center gap-1 rounded-full border border-white/10 bg-zinc-800/60 px-3 py-1 text-xs text-zinc-200; }
 
   .card { @apply rounded-xl p-6 shadow-sm transition; }
   .card-surface { @apply bg-zinc-900/60 border border-white/10; }
+
+  .tilt { transform-style: preserve-3d; will-change: transform; }
+  .shimmer { background-image: linear-gradient(90deg, transparent, rgba(255,255,255,.08), transparent);
+             background-size: 200% 100%; animation: shimmer 2s linear infinite; }
 }
 
 /* Utility aliases */
